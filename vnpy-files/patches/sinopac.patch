@@ -1,0 +1,14 @@
+diff --git a/vnpy/trader/constant.py b/vnpy/trader/constant.py
+index 8c58e007..04130cc1 100644
+--- a/vnpy/trader/constant.py
++++ b/vnpy/trader/constant.py
+@@ -123,6 +123,9 @@ class Exchange(Enum):
+     OTC = "OTC"             # OTC Product (Forex/CFD/Pink Sheet Equity)
+     IBKRATS = "IBKRATS"     # Paper Trading Exchange of IB
+ 
++    TSE = "TSE"             # Taiwan Stock Exchange
++    TFE = "TFE"             # Taiwan Futures Exchange
++
+     # CryptoCurrency
+     BITMEX = "BITMEX"
+     OKEX = "OKEX"

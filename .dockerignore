@@ -1,0 +1,9 @@
+*.log
+.hunter
+.DS_Store
+.vscode
+.pytest_cache
+__pycache__
+logs
+venv
+trades
