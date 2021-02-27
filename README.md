@@ -12,9 +12,15 @@
 
 ## Test environment
 
+It should work on other platforms, but currently it has been only tested on:
+
 * Macbook Pro (Intel) with Docker Desktop.
 
 ## VNPY container
+
+For compiling successfully the ta-lib, it have to configure the  4GB+ memory resources.
+
+![Docker memory resource](./images/docker-resources.png)
 
 ### Build VNPY container
 
@@ -93,7 +99,7 @@
 
     Connect to VNPY container:
 
-    Open a shell terminal, and run:
+    In host, open a shell terminal, and run:
 
     ```
     ssh -X vnpy
@@ -112,7 +118,7 @@
 
     It if you want to place order, you have to provide the certificate additionly.
 
-    i.e. copy the certificate to the working folder:
+    i.e. In host, copy the certificate to the working folder:
 
     ```shell
     cp Sinopac.pfx $VNPY_ROOT/run
@@ -120,14 +126,24 @@
 
 * After SSHed in container, execute the following commands and the VNPY application window will show up.
 
+    In container:
+
     ```shell
-    cd examples
+    cd workspace/run
     python run.py
     ```
 
+Logging:
+
+![VNPY application](./images/vnpy-connecting.png)
+
+After logged in with simulation account:
+
+![VNPY application](./images/vnpy-connected.png)
+
 * For the basic usage of VNPY, you can refer to: 
-        - [在 VNPY 上交易台灣股票、期貨](https://blog.alvin.tw/Shioaji-With-Vnpy/) or
-        - [VnTrader基本使用](https://github.com/vnpy/vnpy/wiki/VnTrader基本使用).
+    - [在 VNPY 上交易台灣股票、期貨](https://blog.alvin.tw/Shioaji-With-Vnpy/) or
+    - [VnTrader基本使用](https://github.com/vnpy/vnpy/wiki/VnTrader基本使用).
 
 ## Reference
 
@@ -140,6 +156,7 @@ VNPY
 
 * [VnTrader基本使用](https://github.com/vnpy/vnpy/wiki/VnTrader基本使用)
 * [在 VNPY 上交易台灣股票、期貨](https://blog.alvin.tw/Shioaji-With-Vnpy/)
+* [vn.py量化交易接口](https://www.vnpy.com/forum/topic/3120-30duo-tao-apijie-kou-huan-pa-man-zu-bu-liao-ni-de-liang-hua-jiao-yi-xu-qiu)
 
 Sinopac
 
@@ -157,7 +174,7 @@ It's due to gcc run out of memory, enlarge the RAM size in Docker's preference a
 * qt.qpa.xcb: could not connect to display
 
 ```shell
-ssh -Y vnpy
+ssh -X vnpy
 ```
 
 * convert BIG-5

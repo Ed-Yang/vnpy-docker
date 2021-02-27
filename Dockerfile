@@ -22,7 +22,16 @@ RUN apt-get install -y python3-dev
 #---------------------------------------------------------------------------
 # lang
 #---------------------------------------------------------------------------
-RUN apt install -y fonts-wqy-microhei
+RUN apt-get -qqy --no-install-recommends install \
+    libfontconfig \
+    libfreetype6 \
+    xfonts-cyrillic \
+    xfonts-scalable \
+    fonts-liberation \
+    fonts-ipafont-gothic \
+    fonts-wqy-zenhei \
+    fonts-wqy-microhei
+
 RUN apt-get install -y locales locales-all
 
 ENV LC_ALL en_US.UTF-8
@@ -95,8 +104,9 @@ RUN $WORKSPACE/venv/bin/pip install pip --upgrade && \
 
 RUN $WORKSPACE/venv/bin/pip install tzlocal plotly pyqtgraph qdarkstyle rqdatac peewee
 
-# clone vnpy
+# clone vnpy (commit: b4e8a079be2123e72bfa9a8cccebc784aaee3789)
 RUN cd $WORKSPACE && git clone https://github.com/vnpy/vnpy.git
+RUN cd $WORKSPACE/vnpy && git checkout b4e8a079be2123e72bfa9a8cccebc784aaee3789
 ADD ./vnpy-files/patches $WORKSPACE/patches
 RUN cd $WORKSPACE/vnpy && git apply $WORKSPACE/patches/*.patch
 
@@ -112,7 +122,7 @@ RUN cd $WORKSPACE/vnpy/vnpy/gateway/sinopac && \
 RUN $WORKSPACE/venv/bin/pip install psycopg2-binary
 RUN $WORKSPACE/venv/bin/pip install https://pip.vnpy.com/colletion/ibapi-9.76.1.tar.gz
 
-# quickfix (disabled)
+# quickfix
 # RUN cd $WORKSPACE/vnpy && sed -i.bak '/quickfix/d' requirements.txt
 RUN $WORKSPACE/venv/bin/pip install -r $WORKSPACE/vnpy/requirements.txt
 
@@ -120,10 +130,21 @@ RUN $WORKSPACE/venv/bin/pip install -r $WORKSPACE/vnpy/requirements.txt
 RUN $WORKSPACE/venv/bin/pip install numpy --upgrade
 
 # build wheel (skip)
+RUN cd $WORKSPACE/vnpy && $WORKSPACE/venv/bin/python setup.py build
 RUN cd $WORKSPACE/vnpy && $WORKSPACE/venv/bin/python -m pip install .
 
+# workaround extensions .so
+ADD ./vnpy-files/copy-so.sh $WORKSPACE
+# RUN cd $WORKSPACE && chmod +x ./copy-so.sh && ./copy-so.sh
+RUN cd $WORKSPACE && sudo chmod +x ./copy-so.sh && ./copy-so.sh
+
+#---------------------------------------------------------------------------
+# environment
+#---------------------------------------------------------------------------
+
 # python additional package path
-RUN echo "LD_LIBRARY_PATH=$WORKSPACE/vnpy/vnpy/api/xtp/libs:$LD_LIBRARY_PATH" >> ~/.bashrc
+RUN echo "export WORKSPACE=$WORKSPACE" >> ~/.bashrc
+RUN echo "export LD_LIBRARY_PATH=$WORKSPACE/vnpy/vnpy/api/xtp/libs" >> ~/.bashrc
 RUN echo "export PYTHONPATH=$PYTHONPATH:$WORKSPACE/vnpy" >> ~/.bashrc
 
 RUN echo "source ~/workspace/venv/bin/activate" >> ~/.bashrc
@@ -141,6 +162,7 @@ RUN echo "export LIBGL_ALWAYS_INDIRECT=1" >> ~/.profile
 
 # cleanup
 RUN sudo rm -rf /var/lib/apt/lists/*
+RUN sudo apt-get -qyy clean
 RUN sudo rm -rf /tmp/ta-lib*
 RUN sudo rm -rf /tmp/quickfix
 
