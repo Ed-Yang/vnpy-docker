@@ -11,18 +11,11 @@ ENV USERNAME ${USERNAME}
 ENV WORKSPACE /home/$USERNAME/workspace
 
 # base
-RUN apt-get update
-RUN apt-get install -y build-essential wget curl vim git libtool automake
-RUN apt-get install -y sudo openssh-server 
-# RUN apt-get install -y python3-tk x11-apps
-RUN apt-get install -y mesa-utils libgl1-mesa-glx
-RUN apt-get install -y python3-dev
-
-
-#---------------------------------------------------------------------------
-# lang
-#---------------------------------------------------------------------------
-RUN apt-get -qqy --no-install-recommends install \
+RUN apt-get update && apt-get install -y build-essential wget curl vim git libtool automake \
+    sudo openssh-server \
+    mesa-utils libgl1-mesa-glx python3-dev \
+    libqt5gui5 postgresql libpq-dev \
+    locales locales-all \
     libfontconfig \
     libfreetype6 \
     xfonts-cyrillic \
@@ -32,7 +25,9 @@ RUN apt-get -qqy --no-install-recommends install \
     fonts-wqy-zenhei \
     fonts-wqy-microhei
 
-RUN apt-get install -y locales locales-all
+#---------------------------------------------------------------------------
+# lang
+#---------------------------------------------------------------------------
 
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -77,9 +72,6 @@ RUN mkdir -p /home/$USERNAME/.vscode-server/extensions \
 #---------------------------------------------------------------------------
 # vnpy
 #---------------------------------------------------------------------------
-RUN sudo apt-get install -y libqt5gui5
-RUN sudo apt-get -y install postgresql libpq-dev
-
 # ta-lib underlying lib (must have before pip install)
 RUN mkdir -p /tmp && cd /tmp && wget https://artiya4u.keybase.pub/TA-lib/ta-lib-0.4.0-src.tar.gz
 RUN cd /tmp && tar -xvf /tmp/ta-lib-0.4.0-src.tar.gz
@@ -87,7 +79,11 @@ RUN cd /tmp/ta-lib && ./configure --prefix=/usr && make && sudo make install
 RUN ta-lib-config --libs
 
 # quickfix lib
-RUN mkdir -p /tmp && cd /tmp && git clone https://github.com/quickfix/quickfix.git
+# RUN mkdir -p /tmp && cd /tmp && git clone https://github.com/quickfix/quickfix.git
+RUN mkdir -p /tmp && cd /tmp && \
+    wget https://github.com/quickfix/quickfix/archive/v1.15.1.tar.gz && \
+    tar xvf v1.15.1.tar.gz
+RUN mv /tmp/quickfix-1.15.1 /tmp/quickfix
 RUN cd /tmp/quickfix && ./bootstrap && ./configure --with-python3 && make && sudo make install
 
 # python
@@ -105,8 +101,11 @@ RUN $WORKSPACE/venv/bin/pip install pip --upgrade && \
 RUN $WORKSPACE/venv/bin/pip install tzlocal plotly pyqtgraph qdarkstyle rqdatac peewee
 
 # clone vnpy (commit: b4e8a079be2123e72bfa9a8cccebc784aaee3789)
-RUN cd $WORKSPACE && git clone https://github.com/vnpy/vnpy.git
-RUN cd $WORKSPACE/vnpy && git checkout b4e8a079be2123e72bfa9a8cccebc784aaee3789
+# RUN cd $WORKSPACE && git clone https://github.com/vnpy/vnpy.git
+# RUN cd $WORKSPACE/vnpy && git checkout b4e8a079be2123e72bfa9a8cccebc784aaee3789
+RUN cd $WORKSPACE && \
+    wget https://github.com/vnpy/vnpy/archive/2.1.9.tar.gz && \
+    tar xvf 2.1.9.tar.gz && mv $WORKSPACE/vnpy-2.1.9 $WORKSPACE/vnpy
 ADD ./vnpy-files/patches $WORKSPACE/patches
 RUN cd $WORKSPACE/vnpy && git apply $WORKSPACE/patches/*.patch
 

@@ -22,7 +22,22 @@ For compiling successfully the ta-lib, it have to configure the  4GB+ memory res
 
 ![Docker memory resource](./images/docker-resources.png)
 
-### Build VNPY container
+### Prepare VNPY container
+
+    * Pull from Docker Hub (recommended)
+
+    ```shell
+    docker pull edwardyang/vnpy
+    ```
+
+    ```shell
+    $ docker images
+    
+    REPOSITORY        TAG       IMAGE ID       CREATED          SIZE
+    edwardyang/vnpy   latest    7813668517cc   41 minutes ago   5.53GB
+    ```
+
+    * Build from Dockerfile (it take hours)
 
     Clone source code:
 
@@ -37,6 +52,14 @@ For compiling successfully the ta-lib, it have to configure the  4GB+ memory res
     ```shell
     cd vnpy-docker
     docker build -t vnpy --build-arg USERNAME=<yourname> .
+    ```
+
+    ```shell
+    $ docker images
+
+    docker images
+    REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+    vnpy         latest    7813668517cc   4 minutes ago   5.53GB
     ```
 
 ### Run VNPY container
@@ -60,6 +83,14 @@ For compiling successfully the ta-lib, it have to configure the  4GB+ memory res
     ```
 
 * Start VNPY container
+
+    Pull from Docker Hub:
+
+    ```shell
+    docker run --rm --name vnpy -v $VNPY_ROOT/run:/home/$USERNAME/workspace/run -p 23456:23456 -it edwardyang/vnpy
+    ```
+
+    Build from Dockerfile:
 
     ```shell
     docker run --rm --name vnpy -v $VNPY_ROOT/run:/home/$USERNAME/workspace/run -p 23456:23456 -it vnpy
