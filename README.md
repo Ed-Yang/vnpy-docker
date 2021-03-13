@@ -66,11 +66,12 @@ For compiling successfully the ta-lib, it have to configure the  4GB+ memory res
 
 * Setup environment variable
 
-    <root-of-repo>: the root path of this repo.
-    <yourname>: the login name given in container building
+    \<root-of-repo\>: the root path of this repo.  
+    \<yourname\>: the login name given in container building. (default: edward)
 
     ```shell
-    export VNPY_ROOT=<root-of-repo>
+    cd vnpy-docker
+    export VNPY_ROOT=`pwd`
     export USERNAME=<yourname>
     ```
 
@@ -106,6 +107,7 @@ For compiling successfully the ta-lib, it have to configure the  4GB+ memory res
 
     First, install X windows client [XQuartz][https://www.xquartz.org].
 
+    If the image is pulled from Docker Hub, the default username and password are 'edward'.
     Add an config "vnpy" in ~/.ssh/config:
 
     ```shell
